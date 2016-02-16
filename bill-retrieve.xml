@@ -1,0 +1,17 @@
+<query xmlns="http://exist.sourceforge.net/NS/exist" method="json" start="1" max="3">
+    <text><![CDATA[
+    xquery version "3.0";
+    declare namespace akn="http://docs.oasis-open.org/legaldocml/ns/akn/3.0/CSD13";
+    declare namespace output = "http://www.w3.org/2010/xslt-xquery-serialization";
+    declare option output:method "json";
+    declare option output:media-type "application/json";
+    (: The 31st Dáil commenced on 2011-03-09 :)
+    let $dail_31 := collection("/db/data/oireachtas/debates")[.//akn:FRBRWork/akn:FRBRdate/@date >= xs:date("2011-03-09")]
+    return
+    for $bill in $dail_31//akn:debateSection[starts-with(@refersTo, "#bill.2011.12.")]
+    let $date := root($bill)//akn:FRBRWork/akn:FRBRdate/@date
+    order by $date ascending
+    return <bill date="{$date}" house="{substring(root($bill)//akn:FRBRWork/akn:FRBRauthor/@href, 2)}" eId="{substring($bill/@refersTo, 2)}">{string($bill/akn:heading)}</bill>]]>
+
+    </text>
+</query>
